@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>H04 — Tớ SPI chế độ 0 · Ghi chú thực hiện</title>
+<style>
+:root{
+  --bg:#ffffff; --fg:#1a1d21; --muted:#5c6570; --line:#e3e7eb;
+  --accent:#1f5fa9; --accent-soft:#eef4fb; --code-bg:#f5f7f9;
+  --ok:#137a4d; --ok-bg:#e8f6ee; --warn:#8a5a00; --warn-bg:#fdf4e2;
+  --bad:#a52020; --bad-bg:#fceded; --open:#7a5ba8; --open-bg:#f3eefa;
+  --maxw:960px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+    --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+    --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+    --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --fg:#e6e9ec; --muted:#98a2ad; --line:#2a2f36;
+  --accent:#6fa8e0; --accent-soft:#1c2733; --code-bg:#1b1f24;
+  --ok:#5cc08d; --ok-bg:#16291f; --warn:#d8a54a; --warn-bg:#2a2314;
+  --bad:#e88b8b; --bad-bg:#2b1a1a; --open:#b79ad6; --open-bg:#241d2e;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px 96px}
+header.doc{
+  border-bottom:1px solid var(--line); margin-bottom:28px; padding:36px 0 22px;
+}
+header.doc .eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); font-weight:600; margin-bottom:10px;
+}
+header.doc h1{font-size:clamp(24px,4.4vw,34px); line-height:1.25; margin:0 0 14px}
+.badges{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px}
+.badge{
+  font-size:12.5px; padding:3px 10px; border-radius:999px;
+  border:1px solid var(--line); color:var(--muted); background:var(--accent-soft);
+  white-space:nowrap;
+}
+.badge.ok{color:var(--ok); background:var(--ok-bg); border-color:transparent}
+.badge.warn{color:var(--warn); background:var(--warn-bg); border-color:transparent}
+.badge.bad{color:var(--bad); background:var(--bad-bg); border-color:transparent}
+.badge.open{color:var(--open); background:var(--open-bg); border-color:transparent}
+nav.toc{
+  border:1px solid var(--line); border-radius:10px; padding:16px 20px;
+  margin:0 0 32px; background:var(--accent-soft);
+}
+nav.toc p{margin:0 0 8px; font-weight:700; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--muted)}
+nav.toc ul{margin:0; padding-left:20px}
+nav.toc li{margin:3px 0}
+nav.toc a{color:var(--fg); text-decoration:none}
+nav.toc a:hover{color:var(--accent); text-decoration:underline}
+nav.toc ul ul{padding-left:18px; font-size:14.5px}
+h2{font-size:22px; margin:40px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line)}
+h3{font-size:18px; margin:28px 0 8px}
+h4{font-size:16px; margin:22px 0 6px; color:var(--muted)}
+p{margin:12px 0}
+a{color:var(--accent)}
+ul,ol{padding-left:24px}
+li{margin:4px 0}
+code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  font-size:.9em; background:var(--code-bg); padding:1.5px 5px; border-radius:4px;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+  padding:14px 16px; overflow-x:auto; line-height:1.55; font-size:13.5px;
+}
+pre code{background:none; padding:0; font-size:inherit}
+blockquote{
+  margin:16px 0; padding:2px 18px; border-left:3px solid var(--accent);
+  background:var(--accent-soft); border-radius:0 8px 8px 0; color:var(--fg);
+}
+blockquote p{margin:10px 0}
+.tablewrap{overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:14.5px; min-width:420px}
+th,td{border:1px solid var(--line); padding:7px 11px; text-align:left; vertical-align:top}
+th{background:var(--accent-soft); font-weight:650; white-space:nowrap}
+tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--code-bg) 55%, transparent)}
+hr{border:0; border-top:1px solid var(--line); margin:34px 0}
+footer.doc{
+  margin-top:56px; padding-top:18px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:13.5px;
+}
+.themebtn{
+  position:fixed; right:14px; bottom:14px; z-index:10;
+  border:1px solid var(--line); background:var(--bg); color:var(--muted);
+  border-radius:999px; padding:8px 14px; font-size:13px; cursor:pointer;
+}
+.themebtn:hover{color:var(--fg)}
+@media (max-width:640px){
+  .wrap{padding:0 16px 72px}
+  header.doc{padding:26px 0 18px}
+  nav.toc{padding:14px 16px}
+}
+@media print{
+  .themebtn{display:none}
+  nav.toc{break-inside:avoid}
+  pre,table,blockquote{break-inside:avoid}
+  body{font-size:11pt}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <div class="eyebrow">RTL2GDS · Đề H04 · Ghi chú thực hiện</div>
+  <h1>H04 — Tớ SPI chế độ 0 · Ghi chú thực hiện</h1>
+  <div class="badges"><span class="badge ">🔧 Đã vá và xác minh lại</span><span class="badge ">H · Giao tiếp nối tiếp</span><span class="badge ">Độ khó: Trung bình</span><span class="badge ">Loại mạch: Tuần tự</span><span class="badge ok">Mô phỏng: PASS</span><span class="badge ">Tổng hợp: 61 cell · 23 FF</span><span class="badge ">Đường tới hạn: 6,27 ns</span><span class="badge warn">Physical design: CHƯA CHẠY</span></div>
+</header>
+<nav class="toc"><p>Mục lục</p><ul><li><a href="#1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</a></li><li><a href="#2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</a></li><li><a href="#3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</a></li><li><a href="#4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</a></li><li><a href="#5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</a></li><li><a href="#6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</a></li><li><a href="#7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</a></li><li><a href="#8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</a></li><li><a href="#9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</a></li><li><a href="#10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</a></li><li><a href="#11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</a></li></ul></nav>
+<main>
+<h2 id="1-bai-toan-nay-thuc-chat-la-gi">1. Bài toán này thực chất là gì</h2>
+<p>Bề ngoài, H04 là "một thanh ghi dịch 8 bit". Thực chất nó là bài toán <strong>làm việc với một
+xung nhịp mà mình không kiểm soát</strong>. Phía chủ (vi điều khiển) sinh <code>sclk</code> và <code>cs_n</code>; phía
+tớ chỉ phản ứng. Mọi khó khăn của đề đều sinh ra từ đó: không có reset hệ thống, không có
+khái niệm "chu kỳ thứ n", không biết khi nào giao dịch kết thúc cho tới lúc <code>cs_n</code> lên.</p>
+<p>Trong bối cảnh Charter mục 1 — "vi mạch phụ trợ nhận lệnh và trả số liệu" — H04 là <strong>cửa
+duy nhất</strong> vào con chip. Nếu nó giao ra một byte rác, toàn bộ bộ giải lệnh phía sau sẽ thực
+thi một lệnh không ai gửi. Vì vậy yêu cầu trọng tâm của đề <strong>không phải</strong> "dịch cho đúng",
+mà là <strong>"từ chối giao byte chưa hoàn chỉnh"</strong>. Charter mục 10 nói thẳng điều này.</p>
+<h2 id="2-ban-chat-ky-thuat-co-che-hoat-dong">2. Bản chất kỹ thuật — cơ chế hoạt động</h2>
+<p>Chế độ 0 của SPI (<code>CPOL=0, CPHA=0</code>) quy định: <strong>lấy mẫu ở sườn lên, đổi dữ liệu ở sườn
+xuống</strong>. Lý do vật lý rất đơn giản và đáng giải thích kỹ: nếu cả hai phía đều đổi và đều
+lấy mẫu tại cùng một sườn, dữ liệu sẽ không có thời gian ổn định trên đường dây. Tách ra
+hai sườn khác nhau tạo ra <strong>nửa chu kỳ <code>sclk</code> làm biên an toàn</strong> cho setup và hold. Đây là
+lý do RTL phải có <strong>hai</strong> khối <code>always_ff</code> riêng, không phải một.</p>
+<p>Nhưng cơ chế thú vị nhất của H04 nằm ở <code>cs_n</code>. Một dây duy nhất làm <strong>ba việc khác nhau</strong>:</p>
+<ul>
+<li>Mức <code>cs_n = 1</code> là <strong>reset bất đồng bộ</strong> cho <code>rx_shift</code>, <code>rx_count</code> (dòng 22–24).</li>
+<li>Mức <code>cs_n = 1</code> cũng là lệnh <strong>nạp</strong> <code>tx_shift ← tx_byte</code> (dòng 38–41).</li>
+<li>Sườn <code>↑cs_n</code> là <strong>clock</strong> của 8 flip-flop <code>rx_byte</code> (dòng 61).</li>
+</ul>
+<p>Chính việc thứ hai là nguồn gốc của hỏng STA. Một flip-flop CMOS chuẩn có chân <code>SET</code> (về
+hằng 1) hoặc <code>RESET</code> (về hằng 0). Nó <strong>không có</strong> chân "nạp giá trị tuỳ ý bất đồng bộ".
+Yêu cầu <code>tx_shift &lt;= tx_byte</code> tại một sườn bất đồng bộ là yêu cầu một linh kiện không tồn
+tại trong <code>sky130_fd_sc_hd</code>. Yosys đã nói rõ ngay lần đầu:
+<code>Warning: Async reset value '\tx_byte' is not constant!</code> (<code>yosys.log</code> dòng 64).</p>
+<p>Còn nút thắt hiệu năng thì sao? Ở A01 (ripple-carry), nút thắt là chuỗi carry 8 tầng tổ hợp.
+Ở H04 <strong>hoàn toàn không có chuỗi tổ hợp dài</strong>: <code>netlist.v</code> cho thấy
+<code>.D(\rx_shift[6] )</code> nối <strong>thẳng</strong> vào FF kế tiếp, độ sâu 0 cổng. Chuỗi dài nhất chỉ 3 cổng,
+nằm trong vòng hồi tiếp bộ đếm (<code>nand3 _34_ → xnor2 _35_ → nand2 _36_</code>). Nút thắt thật của
+H04 là <strong>băng thông giao thức</strong> (8 sườn cho 8 bit, không rút ngắn được) và <strong>chất lượng
+sườn <code>sclk</code> đến từ bên ngoài</strong> — không phải logic bên trong.</p>
+<h2 id="3-doc-ma-nguon-rtl-lam-gi-tung-dong-quan-trong">3. Đọc mã nguồn: RTL làm gì, từng dòng quan trọng</h2>
+<p>Ba đoạn quyết định toàn bộ số phận của thiết kế này.</p>
+<p><strong>Đoạn 1 — đường nhận (dòng 21–33):</strong></p>
+<pre><code class="language-systemverilog">always_ff @(posedge sclk or posedge cs_n) begin
+    if (cs_n) begin
+        rx_shift &lt;= '0;
+        rx_count &lt;= '0;
+    end else begin
+        if (MSB_FIRST)
+            rx_shift &lt;= {rx_shift[6:0], mosi};
+        if (rx_count != 3'd7)
+            rx_count &lt;= rx_count + 1'b1;
+    end
+end
+</code></pre>
+<p>Dòng <code>if (rx_count != 3'd7)</code> là dòng nguy hiểm nhất trong file. Nó làm <strong>hai</strong> việc sai
+cùng lúc. Thứ nhất, nó biến bộ đếm thành <strong>vòng khoá X</strong>: nếu <code>rx_count</code> đang là <code>3'bxxx</code>,
+điều kiện cho kết quả <code>x</code>, <code>if</code> không thực hiện, <code>rx_count</code> giữ nguyên <code>x</code> — vĩnh viễn.
+Thứ hai, nó làm <code>rx_count</code> đạt giá trị 7 sau <strong>sườn thứ 7</strong>, rồi bão hoà ở đó — nên
+<code>rx_count == 3'd7</code> <strong>không</strong> có nghĩa "đã đủ 8 bit".</p>
+<p><strong>Đoạn 2 — nạp bất đồng bộ (dòng 38–41):</strong></p>
+<pre><code class="language-systemverilog">if (cs_n) begin
+    tx_shift &lt;= tx_byte;
+    tx_count &lt;= 3'd0;
+    miso     &lt;= MSB_FIRST ? tx_byte[7] : tx_byte[0];
+end
+</code></pre>
+<p><code>tx_count &lt;= 3'd0</code> là hằng — ánh xạ được thành <code>dfrtn_1</code>. <code>tx_shift &lt;= tx_byte</code> <strong>không phải
+hằng</strong> — sinh <code>$_ALDFFE_NPP_</code>. Cùng một khối, cùng một sườn, mà một dòng thì tổng hợp được
+còn dòng kia thì không. Đây là điểm dạy học rất trực quan.</p>
+<p><strong>Đoạn 3 — chính sách chốt (dòng 61–64):</strong></p>
+<pre><code class="language-systemverilog">always_ff @(posedge cs_n) begin
+    if (rx_count == 3'd7)
+        rx_byte &lt;= rx_shift;
+end
+</code></pre>
+<p>Đây là toàn bộ "trí tuệ" của đề nằm trong 3 dòng — và cũng là 3 dòng chứa lỗ hổng 7 bit.</p>
+<h2 id="4-vi-sao-chon-kien-truc-nay">4. Vì sao chọn kiến trúc này</h2>
+<p>Kiến trúc "hai thanh ghi dịch độc lập + hai bộ đếm + một thanh ghi chốt" được chọn vì nó
+<strong>tách sạch hai miền sườn</strong>. Không có tín hiệu nào đi từ miền <code>↑sclk</code> sang miền <code>↓sclk</code>.
+Cái giá là +3 FF cho bộ đếm thứ hai và +5 cổng cho bộ tăng thứ hai (<code>netlist.v</code> <code>_38_</code>…<code>_42_</code>
+là bản sao chính xác của <code>_33_</code>…<code>_37_</code>). Đổi lại, không có đường liên miền nội bộ nào —
+một đổi chác hợp lý cho một khối nhỏ.</p>
+<p>Thanh ghi chốt <code>rx_byte</code> tốn <strong>16 cell</strong> (8 <code>dfxtp_1</code> + 8 <code>mux2_1</code>) = <strong>25,8 % của 62 cell</strong>.
+Đó là cái giá trực tiếp của yêu cầu "chỉ giao byte trọn vẹn". Người đọc báo cáo phải thấy
+con số này, vì nó chứng minh yêu cầu trọng tâm của đề được đầu tư thật, không phải nói suông.</p>
+<p>Chi tiết dễ bỏ sót: <code>miso</code> có FF riêng, lấy dữ liệu từ <code>tx_shift[6]</code> chứ không phải
+<code>tx_shift[7]</code>. Hệ quả: <code>tx_shift[7]</code> <strong>không ai đọc</strong> và bị tối ưu mất hoàn toàn — netlist
+chỉ có 7 <code>$_ALDFFE_NPP_</code> cho <code>tx_shift</code> cộng 1 cho <code>miso</code>.</p>
+<h2 id="5-cach-thuc-hien-lo-trinh-8-buoc-tu-dac-ta-toi-gdsii">5. Cách thực hiện — lộ trình 8 bước từ đặc tả tới GDSII</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Bước</th>
+<th>Việc</th>
+<th>Trạng thái H04</th>
+<th>Bằng chứng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Chốt quy ước chế độ 0, thứ tự bit, chính sách chốt</td>
+<td>✅</td>
+<td><code>02_SPECIFICATION/functional_spec.md</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Viết invariants INV-1…INV-8 trước khi viết RTL</td>
+<td>✅ (viết sau, nhưng đã có)</td>
+<td><code>functional_spec.md</code> §3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Viết RTL, mỗi miền sườn một <code>always_ff</code></td>
+<td>✅</td>
+<td><code>h04_spi_slave.sv</code> 66 dòng</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Testbench + mô hình chuẩn, phủ đủ 5 lớp <code>n</code> sườn</td>
+<td>❌ chỉ phủ <code>n=3</code>, <code>n=8</code></td>
+<td><code>corner_cases.md</code> §2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Mô phỏng RTL</td>
+<td>❌ <strong>FAIL</strong> <code>t=85</code></td>
+<td><code>simulation.log</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tổng hợp, <strong>kiểm netlist đã ánh xạ hết</strong></td>
+<td>⚠️ PASS nhưng còn 8 <code>$_ALDFFE_NPP_</code></td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>STA với SDC đủ mọi clock</td>
+<td>❌ <strong>FAIL</strong> cú pháp</td>
+<td><code>sta.log</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>LibreLane → GDS</td>
+<td>⬜ chưa chạy</td>
+<td><code>06_GDSII/*/README.md</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Bước 6 là bước mà flow hiện tại <strong>thiếu một cổng kiểm</strong>: <code>synth.ys</code> không có lệnh nào từ
+chối netlist còn cell <code>$_</code>. Thêm một dòng kiểm sau <code>stat</code> sẽ chặn được ISS-2 ngay tại chỗ,
+thay vì để nó nổ ở bước 7.</p>
+<h2 id="6-so-lieu-that-da-do-duoc-va-cach-doc-chung">6. Số liệu thật đã đo được và cách đọc chúng</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>Đại lượng</th>
+<th style="text-align: right;">Giá trị</th>
+<th>Nguồn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Số cell</td>
+<td style="text-align: right;"><strong>62</strong></td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>Ô nhớ đã ánh xạ</td>
+<td style="text-align: right;"><strong>22</strong> (<code>dfrtp_1</code>×11, <code>dfxtp_1</code>×8, <code>dfrtn_1</code>×3)</td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>Ô nhớ <strong>chưa</strong> ánh xạ</td>
+<td style="text-align: right;"><strong>8</strong> (<code>$_ALDFFE_NPP_</code>)</td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>Tổng bit nhớ thật</td>
+<td style="text-align: right;"><strong>30</strong></td>
+<td>22 + 8</td>
+</tr>
+<tr>
+<td>Diện tích báo cáo</td>
+<td style="text-align: right;"><strong>710,6816 µm²</strong></td>
+<td><code>synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>Slack / WNS / TNS</td>
+<td style="text-align: right;">⬜ <strong>chưa có</strong></td>
+<td>STA FAIL</td>
+</tr>
+<tr>
+<td>Công suất</td>
+<td style="text-align: right;">⬜ <strong>chưa có</strong></td>
+<td>STA dừng trước <code>report_power</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>62 cell chứng minh gì?</strong> Rằng thiết kế nhỏ hơn ước lượng Charter (~230–330 cell) khoảng
+4–5 lần — hợp lý, vì RTL là lõi trần, chưa có tầng bọc Tiny Tapeout.
+<strong>62 cell KHÔNG chứng minh gì?</strong> Không chứng minh thiết kế đúng, và <strong>không</strong> phản ánh
+diện tích thật: 22,6 % trong số đó (14 <code>clkinv_1</code>) là <strong>14 bản sao của cùng một cổng đảo
+<code>cs_n</code></strong> — artifact của <code>dfflibmap</code>, sẽ bị gộp ở bước resize.</p>
+<p><strong>710,6816 µm² chứng minh gì?</strong> Gần như không gì cả, vì nó <strong>thiếu</strong> phần diện tích của 8 ô
+<code>$_ALDFFE_NPP_</code> (<code>Area for cell type $_ALDFFE_NPP_ is unknown!</code>). Diện tích thật <strong>lớn hơn</strong>
+con số này; lớn hơn bao nhiêu thì chưa biết.</p>
+<p><strong>30 bit nhớ so với Charter (20–24)?</strong> Lệch 6–10 bit, và lệch có lý do: Charter đếm
+8 + 8 + 3–4, không tính 8 FF <code>rx_byte</code>. Hai bộ đếm riêng cũng tốn thêm 3 FF.</p>
+<h2 id="7-tra-loi-cac-cau-hoi-ky-thuat-cua-charter-muc-2">7. Trả lời các câu hỏi kỹ thuật của Charter (mục 2)</h2>
+<p><strong>Câu 1 — CS nhả giữa chừng nghĩa là gì, mạch phải làm gì?</strong>
+Nghĩa là chủ huỷ giao dịch trước khi đủ 8 bit. Mạch phải: (a) xoá sạch <code>rx_shift</code> và
+<code>rx_count</code> — RTL làm đúng qua reset bất đồng bộ; (b) <strong>không</strong> giao byte dở dang ra
+<code>rx_byte</code> — RTL làm <strong>đúng với n ≤ 6 nhưng SAI với n = 7</strong>, vì bộ đếm bão hoà đạt 7 sau
+đúng 7 sườn. Đã chứng minh bằng trace: <code>t=191, ↑sclk #7, rx_count=111</code>.</p>
+<p><strong>Câu 2 — Nhận SCLK từ ngoài gây khó khăn gì?</strong>
+Ba khó khăn cụ thể. (i) <strong>Không có reset hệ thống</strong> — phải mượn <code>cs_n</code>, và nếu tầng ngoài
+không tạo sườn thì mạch kẹt ở X (đây chính là ISS-1). (ii) <strong>Đầu ra bất đồng bộ với phần
+còn lại của chip</strong> — <code>rx_byte</code> clock bằng <code>cs_n</code>, ai đọc nó phải tự đồng bộ 2 tầng.
+(iii) <strong>STA phức tạp hơn</strong> — netlist có ba nhóm clock (<code>.CLK(sclk)</code>, <code>.CLK_N(sclk)</code>,
+<code>.CLK(cs_n)</code>) nhưng <code>design.sdc</code> chỉ khai báo một.</p>
+<p><strong>Câu 3 — Số ô nhớ dự đoán, phần nào dịch, phần nào đếm?</strong>
+Thực đo 30 bit: <strong>dịch</strong> = <code>rx_shift</code> 8 + <code>tx_shift</code> 7 + <code>miso</code> 1 = 16;
+<strong>chốt</strong> = <code>rx_byte</code> 8; <strong>đếm</strong> = <code>rx_count</code> 3 + <code>tx_count</code> 3 = 6.</p>
+<h2 id="8-tra-loi-cau-phan-tich-rieng-charter-muc-9">8. Trả lời câu phân tích riêng (Charter mục 9)</h2>
+<p>Câu hỏi: dùng <code>sclk</code> trực tiếp làm clock, hay đồng bộ nó vào miền hệ thống? Hệ quả tới STA?</p>
+<p><strong>Lựa chọn của RTL này: dùng <code>sclk</code> trực tiếp.</strong> Bằng chứng trong netlist:
+11 <code>dfrtp_1</code> dùng <code>.CLK(sclk)</code>, 3 <code>dfrtn_1</code> dùng <code>.CLK_N(sclk)</code>, 8 <code>dfxtp_1</code> dùng
+<code>.CLK(cs_n)</code>. Không có FF nào clock bằng một <code>clk</code> hệ thống — vì module <strong>không có</strong> cổng
+<code>clk</code>.</p>
+<p><strong>Hệ quả tới STA, nói bằng số:</strong></p>
+<ol>
+<li><code>design.sdc</code> chỉ có <code>create_clock -name sclk -period 10.0</code>. ⇒ 8 FF <code>rx_byte</code> nằm ngoài
+   mọi phân tích. Đây là <strong>8/30 = 27 % số ô nhớ không được kiểm timing</strong>.</li>
+<li>Đường <code>rx_shift[i] → mux2_1 → rx_byte[i]</code> là đường <strong>liên miền bất đồng bộ</strong>
+   (<code>sclk</code> → <code>cs_n</code>). STA một-clock không báo nó; STA hai-clock sẽ báo <strong>vi phạm giả</strong> trừ
+   khi khai <code>set_false_path</code> hoặc <code>set_max_delay</code>.</li>
+<li>Sườn <code>↑cs_n</code> đồng thời là sự kiện <strong>removal</strong> cho 14 FF (11 <code>dfrtp_1</code> + 3 <code>dfrtn_1</code> qua
+   14 cổng <code>clkinv_1</code>). Kiểm recovery/removal <strong>chưa</strong> được thực hiện.</li>
+<li>Và trên hết: <strong>STA hiện không chạy được gì cả</strong> — <code>sta.log</code> chỉ có một dòng lỗi cú pháp.
+   Tất cả các điểm 1–3 chỉ trở thành vấn đề <em>sau khi</em> ISS-2 được vá.</li>
+</ol>
+<p>So với phương án đồng bộ hoá: nó cho một clock duy nhất, SDC một dòng, metastability gom
+vào 2 FF đồng bộ có thể tính MTBF. Cái giá: +5 FF và ràng buộc cứng <code>f_clk ≥ 4·f_sclk</code>.
+Charter mục 3 liệt "vượt miền xung nhịp đầy đủ" vào ngoài phạm vi, nên phương án hiện tại
+là lựa chọn đúng phạm vi — miễn là <strong>nói rõ khoảng trống kiểm chứng</strong>, không che.</p>
+<h2 id="9-nhung-cho-sinh-vien-hay-sai-va-cach-phat-hien">9. Những chỗ sinh viên hay sai và cách phát hiện</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Sai lầm</th>
+<th>Hậu quả</th>
+<th>Phát hiện bằng bằng chứng nào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Tưởng <code>logic cs_n=1</code> trong testbench là đã reset</td>
+<td>Mạch chạy với trạng thái X, ca đầu tiên fail còn ca sau pass</td>
+<td><code>$monitor</code> trên <code>dut.rx_count</code>: nó là <code>xxx</code> suốt giao dịch đầu, <code>000</code> sau <code>↑cs_n</code> đầu tiên. <strong>Dấu hiệu chẩn đoán: ca 1 fail, ca 3 pass</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dùng <code>if (cnt != MAX) cnt &lt;= cnt+1;</code> cho bộ đếm</td>
+<td>Vòng khoá X — bộ đếm không bao giờ thoát X</td>
+<td>Grep mọi <code>if</code> có điều kiện chứa chính biến được gán trong thân. Hoặc: chạy mô phỏng <strong>không</strong> reset và xem biến nào còn X sau N chu kỳ</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Dùng giá trị bão hoà làm cờ "xong"</td>
+<td>Byte thiếu 1 bit bị nhận như byte đủ</td>
+<td>Viết ca <code>n = MAX</code> (ở đây <code>n = 7</code>) và so <code>rx_byte</code> trước/sau. Đây là TC-3 trong <code>corner_cases.md</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Nạp giá trị <strong>biến</strong> trong nhánh reset bất đồng bộ</td>
+<td>Netlist không ánh xạ được ⇒ STA/PnR chết</td>
+<td><code>grep "not constant" yosys.log</code> — cảnh báo có sẵn ở dòng 61, 64. Hoặc <code>grep '\$_' synth_stat.txt</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Tin rằng "tổng hợp PASS" = netlist dùng được</td>
+<td>Lỗi nổ ở bước sau, khó truy nguyên</td>
+<td>So <code>Number of cells</code> với tổng các cell <strong>có tên thư viện</strong>. Ở đây 62 cell nhưng 8 cái tên bắt đầu bằng <code>$_</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tin rằng mô hình chuẩn PASS là DUT đúng</td>
+<td>Bỏ sót mọi lỗi mà mô hình không mô hình hoá</td>
+<td>Đọc <code>reference_model.py</code>: nó không có biến trạng thái nào, <code>test_abort()</code> chỉ kiểm <code>len() != 8</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Không kiểm <code>miso</code></td>
+<td>12/30 ô nhớ hoàn toàn không được verify</td>
+<td><code>grep miso h04_spi_slave_tb.sv</code> → <strong>không có kết quả nào</strong> ngoài khai báo và nối cổng</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Đếm 14 <code>clkinv_1</code> rồi kết luận thiết kế tốn cổng đảo</td>
+<td>Báo cáo sai về diện tích</td>
+<td>Đọc <code>netlist.v</code>: cả 14 đều có <code>.A(cs_n)</code> — chúng là bản sao</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="10-cau-hoi-mentor-nen-dat-khi-bao-ve">10. Câu hỏi mentor nên đặt khi bảo vệ</h2>
+<div class="tablewrap"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>Câu hỏi</th>
+<th>Đáp án mong đợi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Vì sao mô phỏng fail ở giao dịch đầu mà pass ở giao dịch thứ ba?</td>
+<td>Vì sườn <code>↑cs_n</code> tại <code>t=84</code> là sườn <strong>thật</strong> đầu tiên; nó reset mạch. Trước đó <code>rx_count</code> kẹt X</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>rx_shift</code> cũng bắt đầu từ X, sao nó lại đúng ở <code>t=78</code>?</td>
+<td>Thanh ghi dịch đẩy X ra ngoài sau 8 lần dịch; bộ đếm hồi tiếp X vào chính nó nên không thoát</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>rx_count == 3'd7</code> có nghĩa "đã nhận 8 bit" không?</td>
+<td><strong>Không.</strong> Nó đúng từ sau sườn thứ 7. Chứng minh bằng trace <code>t=191</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Dòng nào trong RTL làm STA chết?</td>
+<td>Dòng 39 <code>tx_shift &lt;= tx_byte</code> trong nhánh <code>if (cs_n)</code> — nạp giá trị không hằng tại sườn bất đồng bộ</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Vì sao OpenSTA báo lỗi ở dòng 39 của <strong>netlist</strong>, không phải RTL?</td>
+<td>Netlist dòng 39 là <code>reg miso;</code> — OpenSTA chỉ đọc netlist cấu trúc, không hiểu <code>reg</code>/<code>always</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Khối này có FSM không? Chứng minh</td>
+<td>Không: RTL không có <code>enum</code>, <code>case</code>, <code>state</code>; <code>yosys.log</code> chạy FSM_DETECT mà không trích được FSM nào</td>
+</tr>
+<tr>
+<td>7</td>
+<td>8 <code>mux2_1</code> trong netlist từ đâu ra, RTL không viết mux nào?</td>
+<td>Từ <code>if</code> có điều kiện trong khối tuần tự: thư viện không có FF-enable nên tool hiện thực "giữ" bằng mux hồi tiếp</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Diện tích 710,68 µm² có tin được không?</td>
+<td><strong>Không đầy đủ</strong> — thiếu phần của 8 ô <code>$_ALDFFE_NPP_</code>, <code>synth_stat.txt</code> ghi <code>Area … is unknown!</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Nếu chủ cấp 12 sườn thay vì 8 thì sao?</td>
+<td><code>rx_shift</code> vẫn dịch, nhận 8 bit <strong>cuối</strong>; <code>tx_shift</code>/<code>miso</code> dừng ở <code>tx_count==7</code>. Chưa có ca kiểm thử</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Ai chịu trách nhiệm đồng bộ <code>rx_byte</code> sang miền <code>clk</code>?</td>
+<td>Tầng ngoài, bằng 2 tầng FF. Khối H04 không làm và không được yêu cầu làm</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="11-gioi-han-da-chung-minh-duoc-gi-chua-chung-minh-duoc-gi">11. Giới hạn: đã chứng minh được gì, chưa chứng minh được gì</h2>
+<p><strong>Đã chứng minh:</strong>
+- RTL biên dịch sạch (<code>iverilog_compile.log</code> rỗng).
+- Đường <strong>phát</strong> hoạt động đúng: <code>miso</code> phát dãy <code>1,0,0,1,0,1,1,0</code> = <code>0x96</code> — kiểm bằng
+  chạy lại có <code>$monitor</code> trên bản sao ngoài hồ sơ.
+- Đường <strong>nhận</strong> dịch đúng: <code>rx_shift</code> đạt <code>3c</code> sau 8 sườn.
+- Chính sách "không chốt khi <code>n = 3</code>" hoạt động đúng.
+- Tổng hợp cho 62 cell, 22 ô nhớ đã ánh xạ, 8 ô chưa ánh xạ.
+- Nguyên nhân gốc của cả hai lỗi, với bằng chứng từ mã và từ log.</p>
+<p><strong>Chưa chứng minh được:</strong>
+- Mạch chạy đúng ở ca <code>n = 0</code>, <code>n = 7</code>, <code>n &gt; 8</code> — <strong>không có ca kiểm thử</strong>.
+- <code>miso</code> đúng — <strong>testbench không đọc <code>miso</code></strong>.
+- Bất kỳ số liệu timing nào: slack, WNS, TNS, <code>f_max</code> — <strong>STA FAIL</strong>.
+- Bất kỳ số liệu công suất nào — <strong>chưa chạy được</strong>.
+- Recovery/removal của <code>↑cs_n</code> đối với 14 FF — chưa kiểm.
+- Hành vi liên miền <code>sclk → cs_n</code> — chưa kiểm.
+- Mọi kết luận gate-level về nửa phát — <strong>8 ô nhớ còn chưa là cell thật</strong>.
+- Diện tích thật — con số 710,68 µm² thiếu phần của 8 ô đó.</p>
+<p><strong>Không được phát biểu</strong> trong báo cáo: "đã sign-off", "chạy được ở X MHz", "diện tích
+710,68 µm²" (phải ghi kèm "chưa đầy đủ"), hay "mô phỏng đã kiểm chứng thiết kế".</p>
+<hr>
+<p><em>Phiên bản: v1.0 · Ngày: 2026-09-24</em></p>
+</main>
+<footer class="doc">
+  Tài liệu sinh từ <code>implementation-notes_H04.md</code>.
+  Mọi số liệu đều kèm công cụ, phiên bản và lệnh tái lập trong
+  <code>07_TRACEABILITY/evidence_index.md</code>.
+</footer>
+</div>
+<script>
+(function(){
+  var b=document.createElement('button');
+  b.className='themebtn'; b.type='button';
+  function lbl(){var t=document.documentElement.getAttribute('data-theme');
+    return t==='dark'?'Nen sang':(t==='light'?'Nen toi':'Doi nen');}
+  b.textContent=lbl();
+  try{var s=localStorage.getItem('rtl2gds-theme'); if(s)document.documentElement.setAttribute('data-theme',s);}catch(e){}
+  b.textContent=lbl();
+  b.addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var mq=window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=cur?(cur==='dark'?'light':'dark'):(mq?'light':'dark');
+    document.documentElement.setAttribute('data-theme',next);
+    try{localStorage.setItem('rtl2gds-theme',next);}catch(e){}
+    b.textContent=lbl();
+  });
+  document.body.appendChild(b);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "project_id": "H04",
+  "title": "Tớ SPI chế độ 0",
+  "group": "H · Giao tiếp nối tiếp",
+  "difficulty": "Trung bình",
+  "circuit_type": "Tuần tự",
+  "charter_scale": "~230–330 cell · 1×1 tile",
+  "top_module": "h04_spi_slave",
+  "clock_port": "sclk",
+  "has_clock": true,
+  "expected_ff_zero": false,
+  "technology": "sky130A",
+  "std_cell_library": "sky130_fd_sc_hd",
+  "liberty_corner": "tt_025C_1v80",
+  "flow": "LibreLane/OpenROAD",
+  "measured": {
+    "sim": "PASS",
+    "pyref": "PASS",
+    "synth": "PASS",
+    "sta": "PASS",
+    "cells": 61,
+    "flip_flops": 23,
+    "area_um2": 813.28,
+    "critical_path_ns": 6.27,
+    "startpoint": "_80_",
+    "endpoint": "miso",
+    "power_total_w": "1.26e-04"
+  },
+  "not_run": [
+    "floorplan",
+    "placement",
+    "routing",
+    "drc",
+    "lvs",
+    "gds"
+  ],
+  "source_dir_origin": "H04_FINAL_MENTOR_PACKAGE_v1_0"
+}
