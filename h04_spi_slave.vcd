@@ -1,0 +1,238 @@
+$date
+	Sun Oct 18 07:44:20 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module h04_spi_slave_tb $end
+$var wire 8 ! rx_byte [7:0] $end
+$var wire 1 " miso $end
+$var reg 1 # cs_n $end
+$var reg 1 $ mosi $end
+$var reg 1 % sclk $end
+$var reg 8 & tx_byte [7:0] $end
+$scope module dut $end
+$var wire 1 # cs_n $end
+$var wire 1 $ mosi $end
+$var wire 1 % sclk $end
+$var wire 8 ' tx_byte [7:0] $end
+$var wire 1 " miso $end
+$var parameter 1 ( MSB_FIRST $end
+$var reg 8 ) rx_byte [7:0] $end
+$var reg 4 * rx_count [3:0] $end
+$var reg 8 + rx_shift [7:0] $end
+$var reg 3 , tx_count [2:0] $end
+$upscope $end
+$scope task spi_bit $end
+$upscope $end
+$scope task spi_byte $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+1(
+$end
+#0
+$dumpvars
+bx ,
+bx +
+bx *
+bx )
+b10010110 '
+b10010110 &
+0%
+0$
+0#
+x"
+bx !
+$end
+#1
+1"
+b0 ,
+b0 *
+b0 +
+1#
+#4
+0#
+#10
+b1 *
+1%
+#15
+0"
+b1 ,
+0%
+#20
+b10 *
+1%
+#25
+b10 ,
+1$
+0%
+#30
+b11 *
+b1 +
+1%
+#35
+1"
+b11 ,
+0%
+#40
+b100 *
+b11 +
+1%
+#45
+0"
+b100 ,
+0%
+#50
+b101 *
+b111 +
+1%
+#55
+1"
+b101 ,
+0%
+#60
+b110 *
+b1111 +
+1%
+#65
+b110 ,
+0$
+0%
+#70
+b111 *
+b11110 +
+1%
+#75
+0"
+b111 ,
+0%
+#80
+b1000 *
+b111100 +
+1%
+#85
+0%
+#86
+b111100 !
+b111100 )
+1"
+b0 ,
+b0 *
+b0 +
+1#
+#92
+1$
+0#
+#97
+b1 *
+b1 +
+1%
+#102
+0"
+b1 ,
+0$
+0%
+#107
+b10 *
+b10 +
+1%
+#112
+b10 ,
+1$
+0%
+#117
+b11 *
+b101 +
+1%
+#122
+1"
+b11 ,
+0%
+#123
+b0 ,
+b0 *
+b0 +
+1#
+#128
+0#
+#133
+b1 *
+b1 +
+1%
+#138
+0"
+b1 ,
+0$
+0%
+#143
+b10 *
+b10 +
+1%
+#148
+b10 ,
+1$
+0%
+#153
+b11 *
+b101 +
+1%
+#158
+1"
+b11 ,
+0$
+0%
+#163
+b100 *
+b1010 +
+1%
+#168
+0"
+b100 ,
+0%
+#173
+b101 *
+b10100 +
+1%
+#178
+1"
+b101 ,
+1$
+0%
+#183
+b110 *
+b101001 +
+1%
+#188
+b110 ,
+0$
+0%
+#193
+b111 *
+b1010010 +
+1%
+#198
+0"
+b111 ,
+1$
+0%
+#203
+b1000 *
+b10100101 +
+1%
+#208
+0%
+#209
+b10100101 !
+b10100101 )
+1"
+b0 ,
+b0 *
+b0 +
+1#
+#210
