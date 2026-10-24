@@ -1,0 +1,31 @@
+
+61. Printing statistics.
+
+=== h04_spi_slave ===
+
+   Number of wires:                 73
+   Number of wire bits:             87
+   Number of public wires:          21
+   Number of public wire bits:      35
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 76
+     sky130_fd_sc_hd__a21bo_2        1
+     sky130_fd_sc_hd__a21o_2         1
+     sky130_fd_sc_hd__a21oi_2        1
+     sky130_fd_sc_hd__and2b_2        1
+     sky130_fd_sc_hd__and3_2         1
+     sky130_fd_sc_hd__buf_1         13
+     sky130_fd_sc_hd__dfrtp_2       15
+     sky130_fd_sc_hd__dfxtp_2        8
+     sky130_fd_sc_hd__inv_2         18
+     sky130_fd_sc_hd__mux2_2        10
+     sky130_fd_sc_hd__mux4_2         2
+     sky130_fd_sc_hd__nor2_2         1
+     sky130_fd_sc_hd__or2b_2         1
+     sky130_fd_sc_hd__or4b_2         1
+     sky130_fd_sc_hd__xor2_2         2
+
+   Chip area for module '\h04_spi_slave': 939.651200
+
