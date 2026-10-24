@@ -1,0 +1,13 @@
+
+60. Executing CHECK pass (checking for obvious problems).
+Checking module h04_spi_slave...
+Warning: Wire h04_spi_slave.\rx_byte [7] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [6] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [5] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [4] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [3] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [2] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [1] is used but has no driver.
+Warning: Wire h04_spi_slave.\rx_byte [0] is used but has no driver.
+Warning: Wire h04_spi_slave.\miso is used but has no driver.
+Found and reported 9 problems.
