@@ -1,0 +1,9 @@
+requirement_id,requirement_summary,implementation_evidence,verification_evidence,status
+REQ-01,"SPI Mode 0 (CPOL=0, CPHA=0)","src/h04_spi_slave.sv","Simulation: verify MOSI sampling and MISO timing","NOT VERIFIED"
+REQ-02,"Receive a complete 8-bit MOSI byte","src/h04_spi_slave.sv","Simulation: check received rx_byte after 8 bits","NOT VERIFIED"
+REQ-03,"Transmit an 8-bit byte through MISO","src/h04_spi_slave.sv","Simulation: compare transmitted MISO bits with tx_byte","NOT VERIFIED"
+REQ-04,"Cancel a partial transaction when CS is deasserted early","src/h04_spi_slave.sv","Simulation: deassert CS before 8 bits and check behavior","NOT VERIFIED"
+REQ-05,"Support two consecutive SPI transactions","src/h04_spi_slave.sv","Simulation: verify two consecutive transfers","NOT VERIFIED"
+REQ-06,"Operate at required slow and fast SCLK rates","src/h04_spi_slave.sv","Simulation: test slow and fast SCLK","NOT VERIFIED"
+REQ-07,"Generate a GDSII layout using OpenLane","results/gds/h04_spi_slave.gds","Check OpenLane completion log and GDSII output","VERIFY"
+REQ-08,"Check physical design DRC and LVS","results/reports/openlane/signoff/","Inspect final DRC and LVS reports","VERIFY"
