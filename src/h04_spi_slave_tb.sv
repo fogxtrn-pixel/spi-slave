@@ -25,36 +25,71 @@ module h04_spi_slave_tb;
     endtask
 
     initial begin
-	$dumpfile("h04_spi_slave.vcd");
-	$dumpvars(0, h04_spi_slave_tb);
-        // Power-on sequence: create a REAL rising edge on cs_n.
-        // A declaration initialiser (logic cs_n=1) does NOT generate an edge
-        // event per IEEE 1800, so the always_ff reset branches never run and
-        // rx_count stays X forever (X-lock).
+        $dumpfile("h04_spi_slave.vcd");
+        $dumpvars(0, h04_spi_slave_tb);
+
+        // Khoi tao reset bang canh len that cua cs_n
         cs_n = 1'b0;
         #1 cs_n = 1'b1;
         #1;
-        // Complete transaction.
-        #2 cs_n=0;
+
+        // TC01: Giao dich day du 8 bit
+        #2 cs_n = 1'b0;
         #1;
         spi_byte(8'h3C);
-        #1 cs_n=1;
+        #1 cs_n = 1'b1;
         #1;
-        assert(rx_byte==8'h3C) else $fatal(1,"RX mismatch");
+        assert(rx_byte == 8'h3C)
+            else $fatal(1, "TC01 failed: RX mismatch");
 
-        // Mid-transaction abort.
-        #5 cs_n=0;
-        spi_bit(1'b1); spi_bit(1'b0); spi_bit(1'b1);
-        #1 cs_n=1;
+        // TC02: Huy giao dich giua chung
+        #5 cs_n = 1'b0;
+        spi_bit(1'b1);
+        spi_bit(1'b0);
+        spi_bit(1'b1);
+        #1 cs_n = 1'b1;
 
-        // Consecutive complete transaction.
-        #5 cs_n=0;
+        // TC03: Giao dich tiep theo sau khi huy
+        #5 cs_n = 1'b0;
         spi_byte(8'hA5);
-        #1 cs_n=1;
+        #1 cs_n = 1'b1;
         #1;
-        assert(rx_byte==8'hA5) else $fatal(1,"Second RX mismatch");
+        assert(rx_byte == 8'hA5)
+            else $fatal(1, "TC03 failed: Second RX mismatch");
 
-        $display("H04 TB completed");
+        // TC06: Nhả CS ngay sau bit thu 8
+        #5 cs_n = 1'b0;
+        spi_byte(8'h69);
+        cs_n = 1'b1;
+        #1;
+        assert(rx_byte == 8'h69)
+            else $fatal(1, "TC06 failed: Boundary byte mismatch");
+
+        // Kiem tra giao dich moi khong bi anh huong boi giao dich truoc
+        #5 cs_n = 1'b0;
+        spi_byte(8'h96);
+        #1 cs_n = 1'b1;
+        #1;
+        assert(rx_byte == 8'h96)
+            else $fatal(1, "TC06 failed: Next transaction mismatch");
+
+        // TC07a: Du lieu toan 0
+        #5 cs_n = 1'b0;
+        spi_byte(8'h00);
+        #1 cs_n = 1'b1;
+        #1;
+        assert(rx_byte == 8'h00)
+            else $fatal(1, "TC07a failed: All-zero mismatch");
+
+        // TC07b: Du lieu toan 1
+        #5 cs_n = 1'b0;
+        spi_byte(8'hFF);
+        #1 cs_n = 1'b1;
+        #1;
+        assert(rx_byte == 8'hFF)
+            else $fatal(1, "TC07b failed: All-one mismatch");
+
+        $display("All SPI test cases passed");
         $finish;
     end
 endmodule

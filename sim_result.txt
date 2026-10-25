@@ -1,0 +1,3 @@
+VCD info: dumpfile h04_spi_slave.vcd opened for output.
+All SPI test cases passed
+src/h04_spi_slave_tb.sv:93: $finish called at 557 (1s)
