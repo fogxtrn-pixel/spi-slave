@@ -1,0 +1,26 @@
+
+name: SPI Slave CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Run SPI Slave simulation
+        run: |
+          iverilog -g2012 -o sim.out \
+            src/h04_spi_slave.sv \
+            src/h04_spi_slave_tb.sv
+          vvp sim.out
